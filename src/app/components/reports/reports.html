@@ -1,0 +1,88 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Reports</h1>
+    <p>Visualize spending trends and patterns</p>
+  </div>
+
+  <div class="period-bar">
+    <button class="period-btn" [class.active]="period()==='monthly'" (click)="period.set('monthly')">Monthly</button>
+    <button class="period-btn" [class.active]="period()==='weekly'"  (click)="period.set('weekly')">Weekly</button>
+  </div>
+
+  <div class="card trend-card">
+    <div class="card-header">
+      <h3>Income vs Expenses Trend</h3>
+      <span class="card-sub">{{ period() === 'monthly' ? 'All months' : 'Last 8 weeks' }}</span>
+    </div>
+    <div class="trend-chart-wrap"><canvas #trendChart></canvas></div>
+  </div>
+
+  <div class="mid-grid">
+    <div class="card">
+      <div class="card-header">
+        <h3>Expense Breakdown</h3>
+        <span class="card-sub">All time · by category</span>
+      </div>
+      <div class="cat-chart-wrap"><canvas #catChart></canvas></div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Monthly Detail</h3>
+        <select class="form-control month-select" [value]="selectedMonth()" (change)="selectedMonth.set($any($event.target).value)">
+          @for (m of availableMonths(); track m) { <option [value]="m">{{ formatMonthLabel(m) }}</option> }
+        </select>
+      </div>
+
+      <div class="month-summary">
+        <div class="month-stat"><span class="ms-label">Income</span><span class="ms-val text-income">+{{ selectedMonthIncome() | currency }}</span></div>
+        <div class="month-stat"><span class="ms-label">Expenses</span><span class="ms-val text-expense">-{{ selectedMonthExpenses() | currency }}</span></div>
+        <div class="month-stat">
+          <span class="ms-label">Net</span>
+          <span class="ms-val" [class.text-income]="selectedMonthNet()>=0" [class.text-expense]="selectedMonthNet()<0">{{ selectedMonthNet() | currency }}</span>
+        </div>
+      </div>
+
+      <div class="month-cats">
+        <p class="cats-title">Spending by Category</p>
+        @for (item of selectedMonthCats(); track item.cat) {
+          <div class="month-cat-row">
+            <div class="mcat-header">
+              <span>{{ categoryIcons[item.cat] || '💰' }}</span>
+              <span class="mcat-name">{{ item.cat }}</span>
+              <span class="mcat-pct">{{ getCatPercent(item.total) | number:'1.0-1' }}%</span>
+              <span class="mcat-val">{{ item.total | currency }}</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" [style.width.%]="getCatPercent(item.total)"></div></div>
+          </div>
+        }
+        @if (selectedMonthCats().length === 0) { <p class="no-data">No expenses for this month.</p> }
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h3>Month-by-Month Summary</h3></div>
+    <div class="monthly-table-wrap">
+      <table class="monthly-table">
+        <thead><tr><th>Month</th><th>Income</th><th>Expenses</th><th>Net</th><th>Savings Rate</th></tr></thead>
+        <tbody>
+          @for (row of monthlyTotals(); track row.month) {
+            <tr>
+              <td class="month-col">{{ formatMonthLabel(row.month) }}</td>
+              <td class="text-income">+{{ row.income | currency }}</td>
+              <td class="text-expense">-{{ row.expense | currency }}</td>
+              <td [class.text-income]="row.income-row.expense>=0" [class.text-expense]="row.income-row.expense<0">{{ (row.income - row.expense) | currency }}</td>
+              <td>
+                <div class="rate-bar">
+                  <div class="rate-fill" [style.width.%]="row.income > 0 ? ((row.income-row.expense)/row.income)*100 : 0"></div>
+                  <span class="rate-val">{{ row.income > 0 ? (((row.income-row.expense)/row.income)*100 | number:'1.0-1') : 0 }}%</span>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

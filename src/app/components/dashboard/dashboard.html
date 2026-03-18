@@ -1,0 +1,90 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1>Dashboard</h1>
+    <p>Track your financial overview at a glance</p>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card balance-card">
+      <p class="stat-label">Net Balance</p>
+      <h2 class="stat-value" [class.positive]="balance() >= 0" [class.negative]="balance() < 0">{{ balance() | currency }}</h2>
+      <p class="stat-sub">Savings rate: {{ savingsRate() / 100 | percent:'1.0-1' }}</p>
+    </div>
+    <div class="stat-card income-card">
+      <p class="stat-label">Total Income</p>
+      <h2 class="stat-value text-income">{{ totalIncome() | currency }}</h2>
+      <p class="stat-sub">All time</p>
+    </div>
+    <div class="stat-card expense-card">
+      <p class="stat-label">Total Expenses</p>
+      <h2 class="stat-value text-expense">{{ totalExpenses() | currency }}</h2>
+      <p class="stat-sub">All time</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-label">Transactions</p>
+      <h2 class="stat-value">{{ recentTx().length }}</h2>
+      <p class="stat-sub">Recent entries</p>
+    </div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="card chart-card">
+      <div class="card-header">
+        <h3>Income vs Expenses</h3>
+        <span class="card-badge">Last 6 months</span>
+      </div>
+      <div class="chart-wrap"><canvas #barChart></canvas></div>
+    </div>
+    <div class="card chart-card">
+      <div class="card-header">
+        <h3>Spending by Category</h3>
+        <span class="card-badge">All time</span>
+      </div>
+      <div class="chart-wrap donut-wrap"><canvas #donutChart></canvas></div>
+    </div>
+  </div>
+
+  <div class="bottom-grid">
+    <div class="card">
+      <div class="card-header">
+        <h3>Recent Transactions</h3>
+        <a routerLink="/transactions" class="see-all">See all →</a>
+      </div>
+      <div class="tx-list">
+        @for (tx of recentTx(); track tx.id) {
+          <div class="tx-row" (click)="openEdit(tx)">
+            <div class="tx-icon">{{ categoryIcons[tx.category] || '💰' }}</div>
+            <div class="tx-info">
+              <p class="tx-title">{{ tx.title }}</p>
+              <p class="tx-meta">{{ tx.category }} · {{ tx.date | date:'MMM d, y' }}</p>
+            </div>
+            <span class="tx-amount" [class.text-income]="tx.type === 'income'" [class.text-expense]="tx.type === 'expense'">
+              {{ tx.type === 'income' ? '+' : '-' }}{{ tx.amount | currency }}
+            </span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Top Expense Categories</h3>
+        <a routerLink="/reports" class="see-all">Reports →</a>
+      </div>
+      <div class="category-list">
+        @for (cat of topCategories(); track cat.category) {
+          <div class="category-row">
+            <div class="cat-header">
+              <span class="cat-icon">{{ categoryIcons[cat.category] || '💰' }}</span>
+              <span class="cat-name">{{ cat.category }}</span>
+              <span class="cat-amount">{{ cat.total | currency }}</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="getCategoryPercent(cat.total)"></div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

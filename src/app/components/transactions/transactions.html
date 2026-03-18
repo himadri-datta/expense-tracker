@@ -1,0 +1,103 @@
+<div class="page-container">
+  <div class="page-header-row">
+    <div>
+      <h1>Transactions</h1>
+      <p>{{ filtered().length }} records found</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-ghost" (click)="exportCSV()">⬇ CSV</button>
+      <button class="btn btn-ghost" (click)="exportPDF()">⬇ PDF</button>
+      <button class="btn btn-primary" (click)="openAdd()">+ Add</button>
+    </div>
+  </div>
+
+  <div class="card filters-card">
+    <div class="filters-row">
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input class="search-input" type="text" placeholder="Search transactions..." [value]="searchQuery()" (input)="searchQuery.set($any($event.target).value)" />
+      </div>
+      <div class="filter-pills">
+        <button class="pill"              [class.active]="filterType()==='all'"     (click)="filterType.set('all')">All</button>
+        <button class="pill income-pill"  [class.active]="filterType()==='income'"  (click)="filterType.set('income')">Income</button>
+        <button class="pill expense-pill" [class.active]="filterType()==='expense'" (click)="filterType.set('expense')">Expense</button>
+      </div>
+      <select class="form-control cat-select" [value]="filterCat()" (change)="filterCat.set($any($event.target).value)">
+        <option value="">All Categories</option>
+        @for (cat of allCategories; track cat) { <option [value]="cat">{{ cat }}</option> }
+      </select>
+      @if (searchQuery() || filterType() !== 'all' || filterCat()) {
+        <button class="btn btn-ghost" (click)="clearFilters()">✕ Clear</button>
+      }
+    </div>
+  </div>
+
+  <div class="summary-strip">
+    <div class="summary-item"><span class="summary-label">Filtered Income</span><span class="summary-val text-income">+{{ filteredIncome() | currency }}</span></div>
+    <div class="summary-divider"></div>
+    <div class="summary-item"><span class="summary-label">Filtered Expenses</span><span class="summary-val text-expense">-{{ filteredExpenses() | currency }}</span></div>
+    <div class="summary-divider"></div>
+    <div class="summary-item">
+      <span class="summary-label">Net</span>
+      <span class="summary-val" [class.text-income]="(filteredIncome()-filteredExpenses())>=0" [class.text-expense]="(filteredIncome()-filteredExpenses())<0">
+        {{ (filteredIncome() - filteredExpenses()) | currency }}
+      </span>
+    </div>
+  </div>
+
+  <div class="card table-card">
+    <table class="tx-table">
+      <thead>
+        <tr>
+          <th class="col-icon"></th>
+          <th class="col-title">Title</th>
+          <th class="col-cat">Category</th>
+          <th class="col-type">Type</th>
+          <th class="col-date sortable" (click)="toggleSort('date')">Date <span class="sort-icon">{{ sortBy()==='date'?(sortDir()==='desc'?'↓':'↑'):'↕' }}</span></th>
+          <th class="col-amount sortable" (click)="toggleSort('amount')">Amount <span class="sort-icon">{{ sortBy()==='amount'?(sortDir()==='desc'?'↓':'↑'):'↕' }}</span></th>
+          <th class="col-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (tx of filtered(); track tx.id) {
+          <tr class="table-row">
+            <td class="col-icon"><div class="row-icon">{{ categoryIcons[tx.category] || '💰' }}</div></td>
+            <td class="col-title">
+              <p class="row-title">{{ tx.title }}</p>
+              @if (tx.note) { <p class="row-note">{{ tx.note }}</p> }
+            </td>
+            <td class="col-cat"><span class="badge badge-cat">{{ tx.category }}</span></td>
+            <td class="col-type">
+              <span class="badge" [class.badge-income]="tx.type==='income'" [class.badge-expense]="tx.type==='expense'">
+                {{ tx.type === 'income' ? '↑' : '↓' }} {{ tx.type }}
+              </span>
+            </td>
+            <td class="col-date">{{ tx.date | date:'MMM d, y' }}</td>
+            <td class="col-amount">
+              <span class="amount-val" [class.text-income]="tx.type==='income'" [class.text-expense]="tx.type==='expense'">
+                {{ tx.type === 'income' ? '+' : '-' }}{{ tx.amount | currency }}
+              </span>
+            </td>
+            <td class="col-actions">
+              @if (confirmDeleteId() === tx.id) {
+                <div class="confirm-delete">
+                  <span>Delete?</span>
+                  <button class="icon-btn danger" (click)="deleteTransaction(tx.id)">✓</button>
+                  <button class="icon-btn" (click)="cancelDelete()">✕</button>
+                </div>
+              } @else {
+                <div class="action-btns">
+                  <button class="icon-btn edit-btn" (click)="openEdit(tx)">✎</button>
+                  <button class="icon-btn del-btn"  (click)="confirmDelete(tx.id)">🗑</button>
+                </div>
+              }
+            </td>
+          </tr>
+        }
+        @if (filtered().length === 0) {
+          <tr><td colspan="7" class="empty-state"><p>🔍 No transactions match your filters.</p><button class="btn btn-ghost" (click)="clearFilters()">Clear filters</button></td></tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

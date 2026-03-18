@@ -1,0 +1,108 @@
+<!-- <nav class="sidebar">
+    <div class="brand">
+        <div class="brand-icon"><span>$</span></div>
+        <div>
+            <p class="brand-name">SpendWise</p>
+            <p class="brand-tagline">Expense Tracker</p>
+        </div>
+    </div>
+
+    <ul class="nav-list">
+        @for (item of navItems; track item.path) {
+        <li>
+            <a [routerLink]="item.path" routerLinkActive="active" class="nav-link">
+                <span class="nav-icon">{{ item.icon }}</span>
+                <span>{{ item.label }}</span>
+            </a>
+        </li>
+        }
+    </ul>
+
+    <div class="sidebar-footer">
+        <button class="btn-add" (click)="openAddModal()">
+            <span class="plus-icon">+</span>
+            Add Transaction
+        </button>
+    </div>
+</nav> -->
+
+
+
+
+
+
+
+
+
+
+
+
+<nav class="sidebar">
+
+  <!-- Brand -->
+  <div class="brand">
+    <div class="brand-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 14.5v1c0 .55-.45 1-1 1s-1-.45-1-1v-1.08c-1.12-.26-2-.97-2.29-2.09-.11-.42.22-.83.65-.83h.28c.31 0 .57.21.65.51.16.59.69 1 1.37 1.09V13.1l-.67-.19c-1.07-.31-1.88-1.16-1.88-2.36 0-1.4 1.1-2.34 2.55-2.5V7c0-.55.45-1 1-1s1 .45 1 1v1.04c.96.21 1.73.84 2.03 1.72.14.4-.17.81-.59.81h-.32c-.29 0-.55-.19-.64-.47-.14-.44-.54-.77-1.01-.87v1.95l.62.17c1.23.33 2.03 1.17 2.03 2.48 0 1.44-1.06 2.37-2.62 2.57z" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <p class="brand-name">SpendWise</p>
+      <p class="brand-tagline">Personal Finance</p>
+    </div>
+  </div>
+
+  <!-- Nav Label -->
+  <p class="nav-section-label">MAIN MENU</p>
+
+  <!-- Nav Links -->
+  <ul class="nav-list">
+    @for (item of navItems; track item.path) {
+      <li>
+        <a [routerLink]="item.path" routerLinkActive="active" class="nav-link" #rla="routerLinkActive">
+          <span class="nav-link-icon">
+            <svg [innerHTML]="item.svg" width="18" height="18" viewBox="0 0 24 24" fill="none"></svg>
+          </span>
+          <span class="nav-link-label">{{ item.label }}</span>
+          <span class="nav-link-arrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+              <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="nav-link-glow"></span>
+        </a>
+      </li>
+    }
+  </ul>
+
+  <!-- Spacer -->
+  <div class="nav-spacer"></div>
+
+  <!-- Stats Mini Card -->
+  <div class="mini-stats">
+    <div class="mini-stat">
+      <span class="mini-stat-dot income-dot"></span>
+      <span class="mini-stat-label">Income</span>
+    </div>
+    <div class="mini-stat">
+      <span class="mini-stat-dot expense-dot"></span>
+      <span class="mini-stat-label">Expense</span>
+    </div>
+    <div class="mini-stat-bar">
+      <div class="mini-stat-fill"></div>
+    </div>
+  </div>
+
+  <!-- CTA Button -->
+  <div class="sidebar-footer">
+    <button class="btn-add" (click)="openAddModal()">
+      <span class="btn-add-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <span>New Transaction</span>
+    </button>
+  </div>
+
+</nav>

@@ -1,0 +1,6 @@
+.app-shell { display: flex; min-height: 100vh; }
+.main-content { flex: 1; margin-left: 260px; background: var(--bg-primary); min-height: 100vh; position: relative; }
+
+@media (max-width: 768px) {
+  .main-content { margin-left: 0; padding-top: 64px; }
+}
